@@ -107,14 +107,14 @@ public class CategoryController {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "409",
-                    description = "Duplicate category name",
+                    description = "Duplicate category key",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
                                       "success": false,
-                                      "message": "Category name already exists.",
-                                      "errorCode": "ET-3002",
+                                      "message": "Category key already exists.",
+                                      "errorCode": "ET-3004",
                                       "timestamp": "2026-04-21T10:30:00"
                                     }
                                     """)
@@ -288,6 +288,7 @@ public class CategoryController {
                                       "data": {
                                         "id": 1,
                                         "name": "Food",
+                                        "categoryKey": "FOOD",
                                         "userId": 42,
                                         "isSystemCategory": false,
                                         "createdAt": "2026-04-21T10:30:00",
@@ -362,13 +363,39 @@ public class CategoryController {
                     description = "Category updated successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class)
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "success": true,
+                                      "message": "Category updated successfully.",
+                                      "data": {
+                                        "id": 1,
+                                        "name": "Updated Food Category",
+                                        "categoryKey": "FOOD",
+                                        "userId": 42,
+                                        "isSystemCategory": false,
+                                        "createdAt": "2026-04-21T10:30:00",
+                                        "updatedAt": "2026-04-23T11:45:00"
+                                      },
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "Validation failed",
-                    content = @Content(mediaType = "application/json")
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Category name is required.",
+                                      "errorCode": "ET-4001",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "403",
@@ -380,7 +407,7 @@ public class CategoryController {
                                       "success": false,
                                       "message": "Access denied to category.",
                                       "errorCode": "ET-3003",
-                                      "timestamp": "2026-04-21T10:30:00"
+                                      "timestamp": "2026-04-23T11:45:00"
                                     }
                                     """)
                     )
@@ -388,12 +415,17 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "Category not found",
-                    content = @Content(mediaType = "application/json")
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "409",
-                    description = "Duplicate category name",
-                    content = @Content(mediaType = "application/json")
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Category not found.",
+                                      "errorCode": "ET-3001",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
@@ -447,12 +479,32 @@ public class CategoryController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "403",
                     description = "Access denied — user cannot delete this category",
-                    content = @Content(mediaType = "application/json")
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Access denied to category.",
+                                      "errorCode": "ET-3003",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "Category not found",
-                    content = @Content(mediaType = "application/json")
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Category not found.",
+                                      "errorCode": "ET-3001",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",

@@ -234,8 +234,11 @@ public class ExpenseService {
         }
         List<Category> categories = categoryRepository.findAllAccessibleByUserAndIds(categoryIds, userId);
         if (categories.size() != categoryIds.size()) {
-            AppLogger.warn(log, "expense.invalidCategories", "categoryIds", categoryIds, "userId", userId);
-            throw new AppException(ErrorCode.EXPENSE_CATEGORY_REQUIRED);
+            // Determine which IDs were not found or not accessible
+            List<Long> foundIds = categories.stream().map(Category::getId).collect(Collectors.toList());
+            List<Long> invalidIds = categoryIds.stream().filter(id -> !foundIds.contains(id)).collect(Collectors.toList());
+            AppLogger.warn(log, "expense.categoryNotFound", "invalidCategoryIds", invalidIds, "userId", userId);
+            throw new AppException(ErrorCode.EXPENSE_CATEGORY_NOT_FOUND);
         }
         return categories;
     }

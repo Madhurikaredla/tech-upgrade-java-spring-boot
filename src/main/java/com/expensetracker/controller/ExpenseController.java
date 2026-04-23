@@ -22,6 +22,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 import java.time.LocalDateTime;
 
@@ -38,10 +40,68 @@ public class ExpenseController {
     @PostMapping
     @Operation(summary = "Create a new expense", description = "Creates a new expense with category mappings for the authenticated user.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Expense created successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "One or more categories not found", content = @Content(mediaType = "application/json"))
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "Expense created successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": true,
+                                      "message": "Expense created successfully.",
+                                      "data": {
+                                        "id": 25,
+                                        "amount": 12200,
+                                        "description": "Monthly groceries",
+                                        "expenseDate": "2026-04-21",
+                                        "categories": [
+                                          {"id": 1, "name": "Food", "categoryKey": "FOOD"},
+                                          {"id": 2, "name": "Household", "categoryKey": "HOUSEHOLD"}
+                                        ],
+                                        "createdAt": "2026-04-23T11:45:00",
+                                        "updatedAt": "2026-04-23T11:45:00"
+                                      },
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation failed — missing or invalid fields",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "categoryIds: must not be empty",
+                                      "errorCode": "ET-4001",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "One or more provided category IDs not found or not accessible",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "One or more provided category IDs were not found or are not accessible.",
+                                      "errorCode": "ET-2006",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
+            )
     })
         public ResponseEntity<ApiResponse<ExpenseMinimalResponse>> createExpense(
             @Parameter(description = "Accept-Language header", example = "en")
@@ -64,11 +124,77 @@ public class ExpenseController {
     @PutMapping("/{id}")
     @Operation(summary = "Update an expense", description = "Updates an existing expense. Only the owner can update it.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Expense updated successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Expense not found", content = @Content(mediaType = "application/json"))
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Expense updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": true,
+                                      "message": "Expense updated successfully.",
+                                      "data": {
+                                        "id": 25,
+                                        "amount": 15000,
+                                        "description": "Updated groceries",
+                                        "expenseDate": "2026-04-21",
+                                        "categories": [
+                                          {"id": 1, "name": "Food", "categoryKey": "FOOD"}
+                                        ],
+                                        "createdAt": "2026-04-23T11:45:00",
+                                        "updatedAt": "2026-04-23T12:30:00"
+                                      },
+                                      "timestamp": "2026-04-23T12:30:00"
+                                    }
+                                    """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "description: size must be between 1 and 255",
+                                      "errorCode": "ET-4001",
+                                      "timestamp": "2026-04-23T12:30:00"
+                                    }
+                                    """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Expense or category not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                @io.swagger.v3.oas.annotations.media.ExampleObject(name = "Expense not found", value = """
+                                        {
+                                          "success": false,
+                                          "message": "Expense not found.",
+                                          "errorCode": "ET-2001",
+                                          "timestamp": "2026-04-23T12:30:00"
+                                        }
+                                        """),
+                                @io.swagger.v3.oas.annotations.media.ExampleObject(name = "Category not found", value = """
+                                        {
+                                          "success": false,
+                                          "message": "One or more provided category IDs were not found or are not accessible.",
+                                          "errorCode": "ET-2006",
+                                          "timestamp": "2026-04-23T12:30:00"
+                                        }
+                                        """)
+                            }
+                    )
+            )
     })
         public ResponseEntity<ApiResponse<ExpenseMinimalResponse>> updateExpense(
             @Parameter(description = "Accept-Language header", example = "en")
@@ -91,10 +217,41 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an expense", description = "Soft-deletes an expense and its category mappings. Only the owner can delete it.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Expense deleted successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Expense not found", content = @Content(mediaType = "application/json"))
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Expense deleted successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": true,
+                                      "message": "Expense deleted successfully.",
+                                      "timestamp": "2026-04-23T12:30:00"
+                                    }
+                                    """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Expense not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Expense not found.",
+                                      "errorCode": "ET-2001",
+                                      "timestamp": "2026-04-23T12:30:00"
+                                    }
+                                    """)
+                    )
+            )
     })
     public ResponseEntity<ApiResponse<Void>> deleteExpense(
             @Parameter(description = "Accept-Language header", example = "en")
@@ -115,10 +272,48 @@ public class ExpenseController {
     @GetMapping("/{id}")
     @Operation(summary = "Get an expense by ID", description = "Retrieves a single expense with its categories. Only the owner can access it.")
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Expense retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Expense retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": true,
+                                      "message": "Expense retrieved successfully.",
+                                      "data": {
+                                        "id": 25,
+                                        "amount": 12200,
+                                        "description": "Monthly groceries",
+                                        "expenseDate": "2026-04-21",
+                                        "categories": [
+                                          {"id": 1, "name": "Food", "categoryKey": "FOOD"}
+                                        ],
+                                        "createdAt": "2026-04-23T11:45:00",
+                                        "updatedAt": "2026-04-23T11:45:00"
+                                      },
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
+            ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Access denied", content = @Content(mediaType = "application/json")),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Expense not found", content = @Content(mediaType = "application/json"))
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Expense not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                    {
+                                      "success": false,
+                                      "message": "Expense not found.",
+                                      "errorCode": "ET-2001",
+                                      "timestamp": "2026-04-23T11:45:00"
+                                    }
+                                    """)
+                    )
+            )
     })
     public ResponseEntity<ApiResponse<ExpenseMinimalResponse>> getExpenseById(
             @Parameter(description = "Accept-Language header", example = "en")
@@ -143,7 +338,42 @@ public class ExpenseController {
         description = "Returns all expenses for the authenticated user, paginated. Supports sort and direction (ASC/DESC only)."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Expenses retrieved successfully"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "200",
+                description = "Expenses retrieved successfully",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = PaginatedResponse.class),
+                        examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = """
+                                {
+                                  "data": [
+                                    {
+                                      "id": 25,
+                                      "amount": 12200,
+                                      "description": "Monthly groceries",
+                                      "expenseDate": "2026-04-21",
+                                      "categories": [
+                                        {"id": 1, "name": "Food", "categoryKey": "FOOD"}
+                                      ],
+                                      "createdAt": "2026-04-23T11:45:00",
+                                      "updatedAt": "2026-04-23T11:45:00"
+                                    }
+                                  ],
+                                  "pagination": {
+                                    "current_page": 1,
+                                    "page_size": 20,
+                                    "total_items": 5,
+                                    "total_pages": 1,
+                                    "has_next": false,
+                                    "links": {
+                                      "next": null,
+                                      "prev": null
+                                    }
+                                  }
+                                }
+                                """)
+                )
+        ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation failed (invalid sort direction)", content = @Content(mediaType = "application/json")),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(mediaType = "application/json"))
     })

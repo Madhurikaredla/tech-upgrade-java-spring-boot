@@ -21,3 +21,6 @@ mvn compile
 # Run the Spring Boot application
 mvn spring-boot:run
 ```
+
+# if port is already in use then kill the port using
+lsof -i :5894 | grep LISTEN | awk '{print $2}' | xargs kill -9

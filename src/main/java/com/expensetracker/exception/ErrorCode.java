@@ -35,6 +35,7 @@ public enum ErrorCode {
     EXPENSE_DATE_INVALID("ET-2003", HttpStatus.BAD_REQUEST, "error.expense.dateInvalid"),
     EXPENSE_CATEGORY_REQUIRED("ET-2004", HttpStatus.BAD_REQUEST, "error.expense.categoryRequired"),
     EXPENSE_ACCESS_DENIED("ET-2005", HttpStatus.FORBIDDEN, "error.expense.accessDenied"),
+    EXPENSE_CATEGORY_NOT_FOUND("ET-2006", HttpStatus.NOT_FOUND, "error.expense.categoryNotFound"),
 
     // ── Category (ET-3001 – ET-3099) ──────────────────────────────────────────
     CATEGORY_NOT_FOUND("ET-3001", HttpStatus.NOT_FOUND, "error.category.notFound"),

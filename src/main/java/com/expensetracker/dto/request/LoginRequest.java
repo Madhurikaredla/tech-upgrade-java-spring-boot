@@ -39,7 +39,7 @@ public class LoginRequest {
      * BCrypt comparison happens in AuthService — the value is NEVER logged.
      */
     @NotBlank(message = "{error.validation.fieldRequired}")
-    @Size(min = 8, max = 15, message = "{error.validation.fieldSizeExceeded}")
+    @Size(min = 8, max = 15, message = "{validation.auth.password.size}")
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,15}$",
         message = "{validation.auth.password.pattern}"
